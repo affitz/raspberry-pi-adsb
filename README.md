@@ -30,7 +30,7 @@ If you don't have a static IP address (you normally don't), your router must sup
 
 # Inventory
 
-![Inventory](images/parts-labeled.jpg)
+![Inventory](images/parts-labeled-small.jpg)
 
 * (1) Raspberry Pi set
   * Raspberry Pi 3 Board
