@@ -228,6 +228,7 @@ Now you should see your sensor on the map. If everything's fine, the sensor shou
 * This guide is largely based on the [ADS-B using dump1090 for the Raspberry Pi](http://www.satsignal.eu/raspberry-pi/dump1090.html) guide
 * This guide uses RTL-SDR drivers from the [osmocomSDR](http://sdr.osmocom.org/trac/wiki/rtl-sdr) project
 * We use the [Malcolm Robb's fork](https://github.com/MalcolmRobb/dump1090) of the [`dump1090`](https://github.com/antirez/dump1090) software
+* This guide is an adapted version of [highsource's guide](https://github.com/openskynetwork/raspberry-pi-adsb/).
 
 # License
 
