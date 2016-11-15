@@ -1,6 +1,8 @@
 Raspberry Pi ADS-B Base Station for OpenSky Network
 ===================================================
 
+Visit https://github.com/affitz/raspberry-pi-adsb/ for software and digital version!
+
 # Introduction
 
 This guide explains how to assemble a simple ADS-B base station using Raspberry Pi and cheap off-the-shelf components
