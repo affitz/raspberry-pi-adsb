@@ -6,7 +6,7 @@ Raspberry Pi ADS-B Base Station for OpenSky Network
 This guide explains how to assemble a simple ADS-B base station using Raspberry Pi and cheap off-the-shelf components
 and how to connect your station to the [OpenSky Network](https://opensky-network.org/).
 
-The proposed base station will be able to receive and decode transponder signals from planes in the radius of up to 200-300 km.
+The proposed base station will be able to receive and decode transponder signals from planes in the radius of up to 600 km.
 
 ![DUMP1090 Screenshot](images/dump1090.png)
 
@@ -26,43 +26,32 @@ This guide assumes installation in a home network with internet connection via r
 If you don't have a static IP address (you normally don't), your router must support dynamic DNS using a provider like [No-IP.com](http://www.noip.com/).
 * Your router must support WiFi so that you could connect Raspberry Pi to the network wirelessly.
 
-# Shopping list
+# Inventory
 
-![Shopping list](images/parts-labeled.jpg)
+![Inventory](images/parts-labeled.jpg)
 
-* Raspberry Pi set
-  * (1) Raspberry Pi 2 Model B [amazon.de](https://www.amazon.de/dp/B01CPGZY3O)
-  * (2) Memory Card 32GB MicroSDHC Class 10, SD adapter [amazon.de](https://www.amazon.de/dp/B01CPGZY3O)
-  * (3) WLAN Adapter [amazon.de](https://www.amazon.de/gp/product/B00416Q5KI)
-  * (4) USB extension cable [amazon.de](https://www.amazon.de/dp/B000NWS55M)
-  * (5) Power supply, heatsinks, case [amazon.de](https://www.amazon.de/gp/product/B00UCSO9G6)
-* Receiver
-  * (6) ADS-B Antenna with *N Female* Connector [ebay.de](http://www.ebay.de/itm/Antenna-ads-b-collinear-great-gain-for-usb-dongle-flightbox-/291800588117)
-  * (7) Cable *N Male - SMA Male*  [amazon.de](https://www.amazon.de/gp/product/B0152WWEUO)
-  * (8) (Optional) Band-pass Filter *SMA Female - SMA Male* [amazon.de](https://www.amazon.de/gp/product/B010GBQXK8)
-  * (9) (Optional) Cable *SMA Female - MCX Male* [amazon.de](https://www.amazon.de/gp/product/B00V4PS1L0)
-  * (10) USB RTL-SDR Receiver [amazon.de](https://www.amazon.de/gp/product/B00VZ1AWQA)
-
-We'll assume that you already have a PC with microSD or SD card reader, monitor with HDMI connection and USB keyboard and mouse needed for installation and that you don't have to order the additionally.
+* (1) Raspberry Pi set
+  * Raspberry Pi 3 Board
+  * Case
+  * Power Supply
+  * Micro SD Card + Adapter
+  * Heatsink
+  * HDMI Cable
+* (2) Optimized RTL-SDR Receiver
+* (3) ADS-B Antenna with *SMA Male* Connector
   
-## Notes on the shopping list
+## Notes on the inventory and installation
 
-* You will need a 2A power supply for Raspberry Pi.
-* Make sure memory card package includes the SD adapter so that you could use this card in a normal PC (which usually has a SD card reader but not the microSD.
-* MicroSDHC Class 10 (high speed class) is highly recommended.
+* There should be a NOOBS Raspbian pre-installed on the SD card
 * If you connect the receiver to one of the USB port on Raspberry Pi directly, it will cover other ports. You can avoid this using the USB extension cable.
-* You'll need a coaxial cable to connect your antenna to your USB RTL-SDR receiver. The shopping list above assumes an antenna with the N Female connector. The recommended [NooElec NESDR Mini 2+](https://www.amazon.de/gp/product/B00VZ1AWQA) receiver has an MCX Female socket, so you basically need to connect MCX Female to N Female. Such cables (*MCX Male - N Male*) are quite rare, a much better option is a *N Male - SMA Male* plus *SMA Female - MCX Male* combination.
-* The *N Male - SMA Male* plus *SMA Female - MCX Male* combination also using the [FlightAware band-pass filter](https://www.amazon.de/gp/product/B010GBQXK8) which reduces the noise and increases the number of the processed ADS-B messages. This filter has the *SMA Female* input and *SMA Male* output so it can be inserted between to cables (from antenna and to to receiver). If you want to spare the filter, just connect two cables directly.
-* The [band-pass filter](https://www.amazon.de/gp/product/B010GBQXK8) is optional, but it is highly recommended. It drastically increases the number of messages.
-* The [NooElec NESDR Mini 2+](https://www.amazon.de/gp/product/B00VZ1AWQA) includes a small *SMA Female - MCX Male* adapter, so you don't necessarily need the *SMA Female - MCX Male* cable. However, if you use the [FlightAware band-pass filter](https://www.amazon.de/gp/product/B010GBQXK8), it is highly recommended to get *SMA Female - MCX Male* cable as well to add flexible connection between the filter and the receiver. Otherwise the filter is connected rigidly into the small MCX socket and as a potential to break it.
+* You should consider using a USB extension cable rather than a antenna extension cable to keep the signal quality as high as possible
+* This installation guide installs the MalcolmRobb version of dump1090. If you want a newer version, we recommend using the mutability fork (https://github.com/mutability/dump1090). Installation should be more or less the same. Just adopt the git url in the setup-dump1090.sh file.
 
 # Overview of the installation steps
 
 * Assemble the Raspberry Pi
 * Connect the components
 * Setup the Raspberry Pi
-  * Prepare the SD card with the Raspbian operating system
-  * Perform the Raspbian installation
   * Build and install drivers for the RTL-SDR receiver
   * Build and install the `dump1090` decoder
 * Connect your base station to the OpenSky Network
@@ -75,59 +64,13 @@ We'll assume that you already have a PC with microSD or SD card reader, monitor 
 
 * Attach heatsinks to chips
 * Fix the Raspberry Pi to the case using screws, close the case
+* Insert SD card
 
 # Connect the components
 
-![Assembled components](images/assembled.jpg)
+Antenna -- NooElec RTL-SDR -- Raspberry Pi -- Internet
 
-Antenna:
-
-* Antenna *N Female*
-* Cable *N Male - SMA Male*
-* (Optional) Band-pass filter *SMA Female - SMA Male* 
-* (Optional) Cable *SMA Female - MCX Male*, alternatively use the *SMA Female - MCX Male* adapter
-* USB RTL-SDR Receiver
-* USB extension cable
-* ... to Raspberry Pi
-
-WLAN Adapter:
-
-* WLAN Adaper
-* USB extension cable
-* ... to Raspberry Pi
-
-Also connect keyboard and mouse.
-
-# Set up the Raspberry Pi
-
-## Prepare the SD card with Raspbian operating system for Raspberry Pi
-
-Follow the [NOOBS Setup](https://www.raspberrypi.org/help/videos/) instructions. In short:
-* [Download](https://www.sdcard.org/downloads/formatter_4/index.html) and install the SDFormatter (a software to format your microSDHC card).
-* Insert your microSDHC memory card into your PC (using the SD adapter).
-* Format the microSDHC card using SDFormatter. Make sure you've selected the correct drive letter. Use the options `FORMAT TYPE` `FULL (Erase)` and `FORMAT SIZE ADJUSTMENT` `OFF`.
-* [Download](https://www.raspberrypi.org/downloads/noobs/) and unzip NOOBS ("New Out Of the Box Software", an easy operating system installer for Raspberry Pi).
-* Copy the uzipped NOOBS files to the freshly formatted microSDHC card.
-* Safely eject the memory card.
-
-## Install Raspbian
-
-* Insert the card into Raspberry Pi.
-* Connect the power.
-* Perform the Raspbian installation.
-* Configure the system after installation (you'd typically want to set region and locale and change the default password (`pi`/`raspberry`).
-* Set up the WLAN/internet connection.
-* Update and upgrade the system:
-```
-sudo apt-get update
-sudo apt-get upgrade
-```
-* Install `git-core` and `git`:
-```
-sudo apt-get install git-core git
-```
-
-Now your Raspberry Pi is ready to be used.
+# Setup Raspberry Pi
 
 ## Set up RTL-SDR drivers and `dump1090`
 
